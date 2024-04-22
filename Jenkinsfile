@@ -1,44 +1,33 @@
 pipeline {
-    agent any
+    agent any 
     
-    stages {
+    stages { 
         stage('SCM Checkout') {
             steps {
-                script {
-                    retry(3) {
-                        git branch: 'main', url: 'https://github.com/bawantha395/4162-rathnayake-rmbtm'
-                    }
+                retry(3) {
+                    git branch: 'main', url: 'https://github.com/bawantha395/4162-rathnayake-rmbtm'
                 }
             }
         }
         stage('Build Docker Image') {
-            steps {
-                script {
-                    bat "docker build -t bawantha395/nodeapp-cuban:%BUILD_NUMBER% ."
-                }
+            steps {  
+                bat 'docker build -t bawantha395/e-commerce-frontend:%BUILD_NUMBER% .'
             }
         }
-        stage('Login to Docker Hub') {
+        stage('Run') {
             steps {
-                script {
-                    withCredentials([string(credentialsId: 'dockerhub_4162_password', variable: 'dockerhub_4162_password')]) {
-                        bat "docker login -u bawantha395 -p ${dockerhub_4162_password}"
-                    }
-                }
+                bat '''
+                    docker run -d --name my_container -p 8080:80 bawantha395/e-commerce-frontend:%BUILD_NUMBER%
+                '''
             }
         }
-        stage('Push Image') {
+        stage('Verify') {
             steps {
-                script {
-                    bat "docker push bawantha395/nodeapp-cuban:%BUILD_NUMBER%"
-                }
-            }
-        }
-    }
-    post {
-        always {
-            script {
-                bat "docker logout"
+                bat '''
+                    docker ps
+                    docker logs my_container
+                    
+                '''
             }
         }
     }
