@@ -23,6 +23,15 @@ pipeline {
                 }
             }
         }
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub_4162_password', variable: 'dockerhub_4162_password')]) {
+                    script {
+                        bat'docker login -u bawantha395 -p ${dockerhub_4162_password}'
+                    }
+                }
+            }
+        }
         stage('Push Image') {
             steps {
                 bat 'docker push bawantha395/nodeapp-cuban:%BUILD_NUMBER%'
