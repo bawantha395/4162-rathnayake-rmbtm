@@ -15,14 +15,7 @@ pipeline {
                 bat 'docker build -t bawantha395/nodeapp-cuban:%BUILD_NUMBER% .'
             }
         }
-        stage('Login to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'dockerhub_4162_password', variable: 'dockerhub_4162_password')]) {
-   
-               bat'docker login -u bawantha395 -p ${dockerhub_4162_password}'
-                }
-            }
-        }
+        
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub_4162_password', variable: 'dockerhub_4162_password')]) {
